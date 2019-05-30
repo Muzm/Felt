@@ -15,7 +15,7 @@
   }
   
   let foo:any = {};
-  foo[obj] = 'World'; // obj对象index signatures所以toString被调用 log: toString called
+  foo[obj] = 'World'; // obj对象作为所以toString被调用 log: toString called
   console.log(foo[obj]); // toString called, World
   console.log(foo['Hello']); // World
   ```
