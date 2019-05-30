@@ -51,10 +51,6 @@
 
   > TS的index signatures(索引)必须是数字或者字符串
 
-
-
-
-
 ### 解决报错
 
 ```ts
@@ -74,4 +70,8 @@
        }
    }
 ```
+
+参考: 
+
+1. [Typescript Deep Dive](<https://basarat.gitbooks.io/typescript/docs/types/index-signatures.html>)
 
