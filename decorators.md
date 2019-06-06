@@ -35,7 +35,7 @@ class MyClass {}
 MyClass.isTestable // false
 ```
 
-装饰器也可以添加实例属性(静态属性和实例属性的区别是静态属性不需要实例话就能访问实例属性需要实例化后才能访问)通过操作目标类的`prototype`.
+装饰器也可以添加实例属性(静态属性和实例属性的区别是静态属性不需要实例化就能访问实例属性需要实例化后才能访问)通过操作目标类的`prototype`.
 
 ```typescript
 function testable(target) {
@@ -157,4 +157,4 @@ add = function () {
 };
 ```
 
-因为装饰器在编译阶段执行, 实际代码中编译阶段的add是undefined所以装饰器无法执行.
+因为装饰器在编译阶段执行, 实际代码中的`add`函数在JS编译阶段还未定义.

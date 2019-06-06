@@ -56,7 +56,7 @@
 ```ts
    export default class Test extends Vue {
         set_something(name: string, value: any):void {
-            this[name] = value
+            this[name] = value; //Element implicitly has an 'any' type because type 'Set' has no index signature
         }
     }
 ```
@@ -74,4 +74,3 @@
 参考: 
 
 1. [Typescript Deep Dive](<https://basarat.gitbooks.io/typescript/docs/types/index-signatures.html>)
-
