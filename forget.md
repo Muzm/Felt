@@ -68,3 +68,17 @@
   参考链接
 
   ​	1. <https://javascript.ruanyifeng.com/dom/event.html#toc10>
+
+## export [things] from [lib];
+
+看echart教程时发现的新操作, 属于es6. 作用相当于:
+
+```ts
+import things from 'lib';
+export things;
+```
+
+参考: <https://stackoverflow.com/questions/38077164/es6-export-from-import>.
+
+
+
