@@ -80,5 +80,26 @@ export things;
 
 参考: <https://stackoverflow.com/questions/38077164/es6-export-from-import>.
 
+## ES6 export import 记录
 
+### export
 
+- `export`必须对外提供接口, 必须与模块内部变量建立一一对应关系. 例如:
+
+```js
+let m = 1;
+export m;  // 报错,m对应的是数字1并没有对应内部变量
+export {m}; // 正确, {m}对应了模块内的变量m
+```
+
+- `export`输出的值是动态的, 如果内部执行了修改`export`变量的操作, `import`时会取到修改后的值.
+- `export`必须在文件的顶级作用域中.
+
+### import
+
+- `import`变量会提升到文件顶部. 
+- `from`后面的文件名的`.js`可以省略.
+- `import`变量是只读变量.
+- `import`是静态执行的, 不能使用表达式和变量, 这些是运行时才能得到结果的.
+- `import * from 'lib'` 使用`*`把所有输出值加载到这个对象上, 或者使用 `import {fn} from 'lib'`结构赋值加载fn函数/变量.
+- `import`一个`export default`的模块: `import fn from 'lib';`.
