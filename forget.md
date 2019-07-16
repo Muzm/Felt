@@ -1,15 +1,21 @@
-## 容易被忘记的事情
+## New操作符, Prototype原型链, Event Flow事件流, 以及立即执行函数记录
 
 ### `new`操作符
 
 - JS中没有构造函数的, 有的只是构造调用, 任何函数都可以被构造调用只要在前面加上`new`操作符
-- `new`放在函数前面的会发生什么
+- `new`放在函数前面的会发生什么. `let x = new Fn()`
+  
   1. 一个新对象被创建出来
-  2. 新对象的`Prototype`链接着函数
+  
+  2. 新对象的`Prototype`链接着函数的`prototype`属性. 
+  
+     每个函数都有一个`prototype`属性它指向一个对象. 使用`new`操作函数会创建一个对象, 对象的原型链链接到函数的`prototype`属性指向的那个对象, 所以被创建的新对象可以使用函数`prototype`对象中的方法属性.
+  
   3. 被调用函数中的`this`被设置为新创建的对象
+  
   4. 除非函数中的`return`语句返回一个对象, 否则`new`调用将返回新创建的对象
 
-### `[[Prototype]]`
+### `[[Prototype]]` 
 
 - `[[Get]]`操作会在对象上寻找属性, 如果找不到就向上到`[[Prototype]]`链接的对象上寻找属性直到原型链顶部
 
@@ -103,4 +109,20 @@ export {m}; // 正确, {m}对应了模块内的变量m
 - `import`是静态执行的, 不能使用表达式和变量, 这些是运行时才能得到结果的.
 - `import * from 'lib'` 使用`*`把所有输出值加载到这个对象上, 或者使用 `import {fn} from 'lib'`结构赋值加载fn函数/变量.
 - `import`一个`export default`的模块: `import fn from 'lib';`.
+
+### JS Function Expression VS. Function Decleartion
+
+如果一个函数被定义时的第一个字符就是`function(){..}`那么这就是一个函数定义.
+
+如果函数被定义时第一个字符不是`function`. 例如: `(function(){..})`第一个字符是`(`, 那么他就是一个函数表达式.
+
+### IIFE (**I**mmediately **I**nvoked **F**unction **E**xpression)
+
+常见的IIFE: `(function() {..})()`
+
+今天见到了一种: `(function(){..}())`
+
+同样的效果.
+
+
 
