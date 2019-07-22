@@ -26,7 +26,9 @@
 
 ## 个人兴趣项目
 
-dirty <u>http://dirtyouth.site</u> 是我在校期间编写的一个练习项目. 因为不喜欢网易云音乐歌曲评论功能, 所以自己动手了这个只有听歌功能的应用. 项目中我抽离了许多被重复使用多次的组件, 对于无法抽离的组件, 业务逻辑我选择用 Snnipet 一键生成, 对于可以重复使用的组件我专门抽离出一个 Components 文件夹存放. 使用 Git 管理项目历史并在 [Github](<https://github.com/Muzm/diRty>) 上与一起开发的同学协同工作. 我此项目中做的工作: 
+dirty 是我在校期间编写的一个练习项目. 因为不喜欢网易云音乐歌曲评论功能, 所以自己动手了这个只有听歌功能的应用. 项目中我抽离了许多被重复使用多次的组件, 对于无法抽离的组件, 业务逻辑我选择用 Snnipet 一键生成, 对于可以重复使用的组件我专门抽离出一个 Components 文件夹存放. 使用 Git 管理项目历史并在 [Github](<https://github.com/Muzm/diRty>) 上与一起开发的同学协同工作. 我此项目中做的工作: 
+
+项目线上地址: http://www.dirtymusic.top  Github: https://github.com/Muzm/diRty
 
 - 使用 React 开发页面以及编写重复使用的独立组件.
 - 使用 Sass 预处理器编写通用 Class.
