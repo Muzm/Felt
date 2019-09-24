@@ -28,5 +28,13 @@ Container(
 ）
 ```
 
+### Image Class
+
+`Image.network` 加载一张网络图片必须给组件图片地址. 实例: `Image.file("http://ImageUrl")`.
+
+`Image.file` 从ImageData中读取图片. 实例: `Image.file(ImageData.file)`.
+
+`Image.asset` 从本地图片文件夹中读取一张图片. 实例: `Image.file("./Images/Imges.png")`.
+
 
 
