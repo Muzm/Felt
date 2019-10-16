@@ -36,5 +36,44 @@ Container(
 
 `Image.asset` 从本地图片文件夹中读取一张图片. 实例: `Image.file("./Images/Imges.png")`.
 
+### Flutter Bug(seems like a bug can you report for me?)
+
+很奇怪的Bug
+
+```
+  GestureDetector(
+              onTap: () async {
+                Navigator.pop(context);
+              },
+              child: Container(
+                color: Colors.indigo, // 如果这不给 `color` 属性的话 onTap 只会在点击 `取消` 两个字时触发. 给了 `color` 属性点击整个 Container 都触发 onTap
+                alignment: Alignment.center,
+                height: screenUtil.adaptive(120),
+                child: Text('取消',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff828282),
+                    )),
+              ),
+            ),
+dart ```
+
+### ListView.builder and Column/Row
+
+1. 使用 `shrinkWrpa` 为 `True` 的 `ListView.builder` 会使用子元素高度(宽度)撑开 `ListView` 所以在 `Column` `Row` 中不会无限占据主轴宽度.
+2. ```
+Column(
+  children: [
+    Expaned( // 
+      child: ListView.builder(itemBuilder: (..){})
+    )
+  ]
+)
+```
+Expaned 会将 ListView 的在 Column 中充满, 相当于给 ListView 设置了高度, 所以 ListView 在 Column 中的不会无线占据主轴高度.
+
+
+
+
 
 
