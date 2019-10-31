@@ -90,7 +90,7 @@ Expaned 会将 ListView 的在 Column 中充满, 相当于给 ListView 设置了
 
 ### 在 ListView.Builder 或 GridView.Builder 中在所有元素的头或尾部添加一个自定义元素
 
-``` dart
+``` dart\ 
 GridView(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3, childAspectRatio: 1.3),
@@ -122,7 +122,7 @@ GridView(
 
 ### Map中的 await
 
-map中的await返回的不是await之后的数据是没有await的过的Future. 所以整个map返回的数组是List<Future>.
+List.map 回调函数中 `return await asyncThings..` 返回的不是await之后的数据是没有await的过的Future. 所以整个map返回的数组是List<Future>.
 使用 `await Future.wait(List<Future>)` 将返回其中所有Future被await之后的数据.
 
 
@@ -154,7 +154,7 @@ FocusScope.of(context).requestFocus(myFocusNode);
 
 
 ### android studio setting 
-Select in project view `Ctrl + s`
+Select in project view `Alt + s`
 
 
 ### using base64 as image
