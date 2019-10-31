@@ -63,16 +63,17 @@ Container(
 `ListView.builder`在`Row`和`Column`中如果未添加主轴的限制的话就会导致RenderBox报错.
 
 1. 使用 `shrinkWrap` 为 `True` 的 `ListView.builder` 会使用子元素高度(宽度)撑开 `ListView` 所以在 `Column` `Row` 中不会无限占据主轴宽度.
-2. ```dart
-Column(
-  children: [
-    Expaned( // 
-      child: ListView.builder(itemBuilder: (..){})
-    )
-  ]
-)
+2. Expaned 会将 ListView 在 Column 中充满, 相当于给 ListView 设置了高度, 所以 ListView 在 Column 中的不会无线占据主轴高度.
+``` dart
+  Column(
+    children: [
+      Expaned( // 
+        child: ListView.builder(itemBuilder: (..){})
+      )
+    ]
+  )
 ```
-Expaned 会将 ListView 的在 Column 中充满, 相当于给 ListView 设置了高度, 所以 ListView 在 Column 中的不会无线占据主轴高度.
+
 
 
 ### Refresh
@@ -90,7 +91,7 @@ Expaned 会将 ListView 的在 Column 中充满, 相当于给 ListView 设置了
 
 ### 在 ListView.Builder 或 GridView.Builder 中在所有元素的头或尾部添加一个自定义元素
 
-``` dart\ 
+``` dart 
 GridView(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3, childAspectRatio: 1.3),
