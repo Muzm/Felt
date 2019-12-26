@@ -50,6 +50,9 @@ Widget buildView(HomeState state, Dispatch dispatch, ViewService viewService) {
 }
 ```
 
+### extended_nested_scroll_view 的使用
+在(extended)NestedScrollView的body部分除了NestedScrollViewInnerScrollPositionKeyWidget的子元素其他的元素都会被固定到顶部
+
 ### 2. fish-redux 中使用 MutableSource Adapter 多源适配器
 
 使用场景: Page中有一个List需要被...
@@ -94,5 +97,10 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
 }
 
 ```
+### 4. Fish-redux View中的viewService.context使用要点
+在View.dart中使用`viewService.context`作为Context来Push或者Pop页面时需要注意: 
+1. `viewService.context`是*会*变化的. 如果页面中嵌套有TabBar, 在切换时会发生变化(? 没有考证过).
+2. effct.dart中的被注册的effct函数中的`viewService.context`*不会*发生变化.
+3. view.dart中的`viewService.context`会发生变化所以你在view中做Push Pop操作时的Context可能不是你期望的那个. 建议将路由操作全部都放在effct.dart中使用dispatch effct的方式来进行路由操作.
 
 
