@@ -1,4 +1,4 @@
-## 最近工作中使用到的Flutter相关
+## 最近工作中使用到的Flutter fish-redux相关
 
 ### 1.fish-redux Page Slot注册Component
 fish-redux中的Page.dart中的`Slot`可以在其中注册`Component`(fish-redux中的Component). 组件的目的是用于多次复用所以必须传递数据到`Component`中(如果遇到不需要传递数据的情况请直接使用`Page`). 而传递数据必须要`Connector`来进行.
@@ -46,16 +46,99 @@ Widget buildView(HomeState state, Dispatch dispatch, ViewService viewService) {
         )
     )
 }
-
-}
 ```
 
 ### extended_nested_scroll_view 的使用
-在(extended)NestedScrollView的body部分除了NestedScrollViewInnerScrollPositionKeyWidget的子元素其他的元素都会被固定到顶部
+-在(extended)NestedScrollView的body部分除了NestedScrollViewInnerScrollPositionKeyWidget的子元素其他的元素都会被固定到顶部-
+
 
 ### 2. fish-redux 中使用 MutableSource Adapter 多源适配器
 
-使用场景: Page中有一个List需要被...
+使用场景: Page中有一个List需要根据其中的数据来渲染不同的Component时用到(当然只渲染一个Component也是没有问题的).
+``` dart
+// adapter.dart
+class BillsAdapter extends SourceFlowAdapter<BillsState> {
+  BillsAdapter()
+      : super(
+          pool: <String, Component<Object>>{
+            'item': BillsItemComponent(), // 账单component
+            'month': BillMonthItemComponent() // 月账单组件component
+            // 根据 state.dart getItemType 函数返回的字符串来选择相应的 Component
+          },
+        );
+}
+
+// state.dart
+class BillsState extends MutableSource implements Cloneable<BillsState> { 
+  // 注册多源适配器的Page/Component, state一定要继承 MutableSource 并覆盖四个方法 getItemData getItemType itemCount setItemData.
+  
+  List<dynamic> bills = []; // 需要被多个Component渲染的List 因为List里有多个 ComponentState 所以使用 List<dynamic> 作为类型
+  
+  @override
+  BillsState clone() {
+    return BillsState()..bills = bills;
+  }
+
+  @override
+  Object getItemData(int index) {  // getItemData 负责将数据传入 getItemType 中返回的组件
+    return bills[index];
+  }
+
+  @override
+  String getItemType(int index) { 
+    // 根据当前 index 拿出 bills 中对应的数据来进行判断 fish会根据返回的字符来渲染adapter.dart中对应的Component进行渲染
+    if (bills[index].bill.billType == 'month') {
+      return 'month';
+    }
+
+    return 'item';
+  }
+
+  @override
+  int get itemCount => bills.length; // 需要渲染多个数据 一般是需要渲染的List的length
+
+  @override
+  void setItemData(int index, Object data) { 
+    // Component中数据被修改后存储到哪里 ps. Component是短暂的随时可能会被销毁  数据需要一个地方进行存储
+    bills[index] = data; 
+  }
+}
+
+// page.dart
+class BillsPage extends Page<BillsState, Map<String, dynamic>> {
+  BillsPage()
+      : super(
+            initState: initState,
+            effect: buildEffect(),
+            reducer: buildReducer(),
+            view: buildView,
+            dependencies: Dependencies<BillsState>(
+                adapter: NoneConn<BillsState>() + BillsAdapter(), // 在Page.dart中必须要在这讲adapter注册到Page中 (才能在View中使用adapter)
+                slots: <String, Dependent<BillsState>>{
+                }),
+            middleware: <Middleware<BillsState>>[
+            ],);
+
+}
+
+
+// view.dart
+Widget buildView(BillsState state, Dispatch dispatch, ViewService viewService) {
+  final adapter = viewService.buildAdapter(); // build 适配器(adapter)
+  return Scaffold(
+    appBar: CustAppbar(
+      title: Text(state.appBarTitle),
+      centerTitle: true,
+    ),
+    body: ListView.builder( // 使用适配器渲染组件
+      itemBuilder: adapter.itemBuilder,
+      itemCount: adapter.itemCount,
+    ),
+  );
+}
+
+
+```
 
 ### 3. fish-redux 的 View 什么时候会更新
 fish-redux中创建的reducer函数都需要返回一个对象. 默认更新条件是返回的对象是一个新对象并且是同类对象时(同一个类实例化的对象)fish-redux会去触发View的更新(如果只需要修改数据不更新View 就可以将State修改后直接返回). 除此之外在Page/Component中添加`shouldUpdate`函数用于控制页面是否更新, 函数在每次调用Reducer之后都会触发一次. `shouldUpdate`拥有两个参数分别是oldState和newState, oldState是调用Reducer之前的state, newState是Reducer返回的state. **如果`shouldUpdate`函数返回`true`那么View就会更新`false`不更新**
@@ -97,7 +180,7 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
 }
 
 ```
-### 4. Fish-redux View中的viewService.context使用要点
+### 4. fish-redux View中的viewService.context使用要点
 在View.dart中使用`viewService.context`作为Context来Push或者Pop页面时需要注意: 
 1. `viewService.context`是*会*变化的. 如果页面中嵌套有TabBar, 在切换时会发生变化(? 没有考证过).
 2. effct.dart中的被注册的effct函数中的`viewService.context`*不会*发生变化.
