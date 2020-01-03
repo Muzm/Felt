@@ -187,3 +187,8 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
 3. view.dart中的`viewService.context`会发生变化所以你在view中做Push Pop操作时的Context可能不是你期望的那个. 建议将路由操作全部都放在effct.dart中使用dispatch effct的方式来进行路由操作.
 
 
+### 5. ListView.builder中嵌套Component
+ `ListView.builder`中的元素都是按需加载的. 今天把`Adapter.itemBuilder`放在`ListView.builder`中出现了一个问题. 当父页面需要dispatch所有Component的一个Action时 部分Component没有被Builder出来, 所以没有接受到父页面中的dispatch. 我的解决方案是直接在父页面中修改子Component的数据, 不使用dispatch的让Component自己修改数据.
+
+
+
