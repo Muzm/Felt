@@ -67,7 +67,6 @@ Container(
       Navigator.pop(context);
     },
     child: Container(
-      color: Colors.indigo,
       alignment: Alignment.center,
       height: screenUtil.adaptive(120),
       child: Text('取消',
