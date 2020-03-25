@@ -64,18 +64,18 @@ Container(
  GestureDetector(
    behavior: HitTestBehavior.translucent,
     onTap: () async {
-                Navigator.pop(context);
-              },
-              child: Container(
-                color: Colors.indigo,
-                alignment: Alignment.center,
-                height: screenUtil.adaptive(120),
-                child: Text('取消',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xff828282),
-                    )),
-              ),
+      Navigator.pop(context);
+    },
+    child: Container(
+      color: Colors.indigo,
+      alignment: Alignment.center,
+      height: screenUtil.adaptive(120),
+      child: Text('取消',
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xff828282),
+          )),
+    ),
  )
  ```
 
