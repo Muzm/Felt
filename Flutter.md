@@ -58,74 +58,48 @@ Container(
             ),
  ```
 
+#### 2020/3/25 已解决 这样就算点击没有颜色的地方也会触发onTap
+
+ ``` dart
+ GestureDetector(
+   behavior: HitTestBehavior.translucent,
+    onTap: () async {
+                Navigator.pop(context);
+              },
+              child: Container(
+                color: Colors.indigo,
+                alignment: Alignment.center,
+                height: screenUtil.adaptive(120),
+                child: Text('取消',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff828282),
+                    )),
+              ),
+ )
+ ```
+
 ### ListView.builder and Column/Row
 
 `ListView.builder`在`Row`和`Column`中如果未添加主轴的限制的话就会导致RenderBox报错.
 
 1. 使用 `shrinkWrap` 为 `True` 的 `ListView.builder` 会使用子元素高度(宽度)撑开 `ListView` 所以在 `Column` `Row` 中不会无限占据主轴宽度.
 2. Expaned 会将 ListView 在 Column 中充满, 相当于给 ListView 设置了高度, 所以 ListView 在 Column 中的不会无线占据主轴高度.
+
 ``` dart
   Column(
     children: [
-      Expaned( // 
+      Expaned( //
         child: ListView.builder(itemBuilder: (..){})
       )
     ]
   )
 ```
 
-
-
-### Refresh
-
-实现一个 `refresh`
-
-1. (https://www.youtube.com/watch?v=sI3UbjDcTsk)[Using the Refresh Indicator] 
-
-2. (https://medium.com/@KarthikPonnam/flutter-loadmore-in-listview-23820612907d)[flutter loadmore in listview]
-
-### Dart Stream
-
-1.(https://zhuanlan.zhihu.com/p/55783611)[stream on dart and flutter(介绍)]
-
-
-### 在 ListView.Builder 或 GridView.Builder 中在所有元素的头或尾部添加一个自定义元素
-
-``` dart 
-GridView(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3, childAspectRatio: 1.3),
-                      children: <Widget>[
-                        SizedBox( // 自定义元素
-                          width: screenUtil.adaptive(300),
-                          height: screenUtil.adaptive(200),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              ImageHelper.asset(
-                                'img/icon/add.png',
-                                fit: BoxFit.fill,
-                              ),
-                              Text('相册')
-                            ],
-                          ),
-                        ),
-                        for (final i in state.images)
-                          SizedBox( // 需要build的元素
-                              width: screenUtil.adaptive(300),
-                              height: screenUtil.adaptive(200),
-                              child: Image.file(i.file))
-                      ],
-                    ),
-```
-1. 写代码时需要注意将重复的代码封装成方法, 反复使用.
-2. 听取需求之后思考最简便的实现方案
-
 ### Map中的 await
 
 List.map 回调函数中 `return await asyncThings..` 返回的不是await之后的数据是没有await的过的Future. 所以整个map返回的数组是List<Future>.
 使用 `await Future.wait(List<Future>)` 将返回其中所有Future被await之后的数据.
-
 
 ### StatefulWidget 强制用户传入初始数据
 
@@ -149,16 +123,17 @@ class Picker extends StatefulWidget {
 ```
 
 ### 将一个FofucsNode聚焦 (已经添加到TextField上)
+
 ``` dart
 FocusScope.of(context).requestFocus(myFocusNode);
 ```
 
+### android studio setting
 
-### android studio setting 
 Select in project view `Alt + s`
 
-
 ### using base64 as image
+
 ``` dart
 final res = base64.decode(base64String);
 
@@ -168,17 +143,10 @@ Container(
 )
 ```
 
-### Stack set child fill
-``` dart
-Stack(
-  children: <Widget>[
-    Positioned.fill(
-      child: background, // 这个子元素将充满Stack
-    ),
-    foreground,
-  ],
-);
-```
+### `TextFormField` 的 `initialValue` 不更新问题
+
+最近在做一个输入框的时候发现: `initialValue` 值的只初始化一次. `TextFormField`初始化完成后 `initialValue` 的值如何改变都不会影响到 `TextFormField` 中输入的值.
+如果需要输入框中值改变的话直接使用 `TextEditController.text` 进行修改, 改变后值将同步到输入框中
 
 ### 七月四日的帝国大厦大小不过一枚硬币
 

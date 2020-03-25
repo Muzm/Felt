@@ -49,7 +49,7 @@ Widget buildView(HomeState state, Dispatch dispatch, ViewService viewService) {
 ```
 
 ### extended_nested_scroll_view 的使用
--在(extended)NestedScrollView的body部分除了NestedScrollViewInnerScrollPositionKeyWidget的子元素其他的元素都会被固定到顶部-
+-在(extended)NestedScrollView的body部分会在滚动到顶部时固定在屏幕顶端-
 
 
 ### 2. fish-redux 中使用 MutableSource Adapter 多源适配器
@@ -180,15 +180,15 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
 }
 
 ```
+
 ### 4. fish-redux View中的viewService.context使用要点
+
 在View.dart中使用`viewService.context`作为Context来Push或者Pop页面时需要注意: 
+
 1. `viewService.context`是*会*变化的. 如果页面中嵌套有TabBar, 在切换时会发生变化(? 没有考证过).
 2. effct.dart中的被注册的effct函数中的`viewService.context`*不会*发生变化.
 3. view.dart中的`viewService.context`会发生变化所以你在view中做Push Pop操作时的Context可能不是你期望的那个. 建议将路由操作全部都放在effct.dart中使用dispatch effct的方式来进行路由操作.
 
-
 ### 5. ListView.builder中嵌套Component
+
  `ListView.builder`中的元素都是按需加载的. 今天把`Adapter.itemBuilder`放在`ListView.builder`中出现了一个问题. 当父页面需要dispatch所有Component的一个Action时 部分Component没有被Builder出来, 所以没有接受到父页面中的dispatch. 我的解决方案是直接在父页面中修改子Component的数据, 不使用dispatch的让Component自己修改数据.
-
-
-
