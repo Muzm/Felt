@@ -58,7 +58,7 @@ Container(
             ),
  ```
 
-#### 2020/3/25 已解决 这样就算点击没有颜色的地方也会触发onTap
+#### 已解决 这样就算点击没有颜色的地方也会触发onTap 2020/3/25
 
  ``` dart
  GestureDetector(
@@ -143,7 +143,7 @@ Container(
 )
 ```
 
-### `TextFormField` 的 `initialValue` 不更新问题
+### `TextFormField` 的 `initialValue` 不更新问题 2020/3/25
 
 最近在做一个输入框的时候发现: `initialValue` 值的只初始化一次. `TextFormField`初始化完成后 `initialValue` 的值如何改变都不会影响到 `TextFormField` 中输入的值.
 
