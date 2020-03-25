@@ -146,7 +146,11 @@ Container(
 ### `TextFormField` 的 `initialValue` 不更新问题
 
 最近在做一个输入框的时候发现: `initialValue` 值的只初始化一次. `TextFormField`初始化完成后 `initialValue` 的值如何改变都不会影响到 `TextFormField` 中输入的值.
-如果需要输入框中值改变的话直接使用 `TextEditController.text` 进行修改, 改变后值将同步到输入框中
+
+如果输入框初始完成后还需要改变输入框中的值的话就需要用到 `TextEditController`.
+将 Controller 给到 `TextFormField` 后修改 `TextEditController.text` 这时的改动就会同步到输入框里面.
+
+(<https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue)[参考资料]>
 
 ### 七月四日的帝国大厦大小不过一枚硬币
 
