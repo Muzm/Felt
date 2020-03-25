@@ -151,6 +151,35 @@ Container(
 
 (<https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue)[参考资料]>
 
+### 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
+
+在`initState`调用的时候`context`并没有加载好. 所以`initState`转圈的显示如果需要用到`context`的话就会报错.
+
+处理办法是:
+
+``` dart
+@override
+  void initState() {
+    _fetchJobDetail();
+    super.initState();
+  }
+
+  Future<void> _fetchJobDetail() async {
+    Future.delayed(Duration.zero, () async { // 将转圈和请求数据转为一个异步操作 等待同步的context加载完成
+      final res = await loadingCallback( // loadingCallback 的作用是在RecruitmentService.fetchJobDetail完成之前在页面上显示一个转圈
+          () async => await RecruitmentService.fetchJobDetail(widget.id),
+          context: context);
+
+      setState(() {
+        info = res;
+        jobTitleController.text = res.jobTitle;
+      });
+    });
+  }
+```
+
+将转圈和请求数据转为一个异步操作 等待同步的context加载完成
+
 ### 七月四日的帝国大厦大小不过一枚硬币
 
 ### 迷幻藏于火焰中, 触碰的到感觉是温暖的丝绒味道
