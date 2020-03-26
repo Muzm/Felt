@@ -149,7 +149,7 @@ Container(
 如果输入框初始完成后还需要改变输入框中的值的话就需要用到 `TextEditController`.
 将 Controller 给到 `TextFormField` 后修改 `TextEditController.text` 这时的改动就会同步到输入框里面.
 
-(<https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue)[参考资料]>
+[https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue](参考)
 
 ### 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
 
@@ -182,7 +182,7 @@ Container(
 
 ### 后端的JSON中快速简历一个模型类 2020/3/25
 
-(<https://javiercbk.github.io/json_to_dart/)[https://javiercbk.github.io/json_to_dart/]>
+[JSON to Dart](https://javiercbk.github.io/json_to_dart/)
 
 ### 七月四日的帝国大厦大小不过一枚硬币
 
