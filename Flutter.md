@@ -184,6 +184,46 @@ Container(
 
 [JSON to Dart](https://javiercbk.github.io/json_to_dart/)
 
+### Dio上传多张图片 2020/3/26
+
+``` dart
+  static Future<List> uploadReportImages(List<Asset> images) async {
+    try {
+      final List<Future<MultipartFile>> fuMutiPart = images.map((asset) async {
+        ByteData byteData = await asset.getByteData();
+
+        List<int> imageData = byteData.buffer.asUint8List();
+
+        return MultipartFile.fromBytes(imageData,
+            filename: asset.name,
+            contentType: MediaType("image", "png"));
+      }).toList();
+
+      final List<MultipartFile> mutiPartList = await Future.wait(fuMutiPart);
+
+      FormData form = FormData.fromMap({"file": mutiPartList});
+
+      final result =
+          await BaseService.http.post('recruitment/index/upload', data: form);
+
+      if (result.data is DioError) {
+        showToast(result.data.error);
+        throw (result.data);
+      }
+
+      final List data = result.data['data'];
+
+      if (result.data['code'] == 200 && data.isNotEmpty) {
+        return data;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+```
+
+Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就变成了`Key[]`. 在上面的示例代码中`FormData.fromMap({"file": mutiPartList})` 如果mutiPartList是一个List. Key会被Dio的`FormData.fromMap`转为`file[]`. 可能导致后端key不同接收不到数据.
+
 ### 七月四日的帝国大厦大小不过一枚硬币
 
 ### 迷幻藏于火焰中, 触碰的到感觉是温暖的丝绒味道
