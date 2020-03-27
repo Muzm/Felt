@@ -224,6 +224,8 @@ Container(
 
 Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就变成了`Key[]`. 在上面的示例代码中`FormData.fromMap({"file": mutiPartList})` 如果mutiPartList是一个List. Key会被Dio的`FormData.fromMap`转为`file[]`. 可能导致后端key不同接收不到数据.
 
+[参考](https://github.com/flutterchina/dio/issues/10)
+
 ### 七月四日的帝国大厦大小不过一枚硬币
 
 ### 迷幻藏于火焰中, 触碰的到感觉是温暖的丝绒味道
