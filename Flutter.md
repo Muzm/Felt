@@ -226,6 +226,15 @@ Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就�
 
 [参考](https://github.com/flutterchina/dio/issues/10)
 
+### TabBar 的 Padding
+
+`Tab`默认有一个`EdgeInsets.symmetric(horizontal: 16)`的`Padding`. [ref](https://github.com/flutter/flutter/issues/21694#issue-359151684)
+在如果`Tab`中的文字过长那么就会显示不全, 可以把默认的`Padding`设为0.
+这个`Padding`非常神奇他不是设置在`Tab`上的. 是设置在`TabBar`的`labelPadding`上的. 估计Flutter团队想让每个`Tab.padding`都统一把.
+
+**Come on baby light my fire**
+**来吧宝贝点燃我的火焰**
+
 ### 七月四日的帝国大厦大小不过一枚硬币
 
 ### 迷幻藏于火焰中, 触碰的到感觉是温暖的丝绒味道
@@ -239,3 +248,9 @@ Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就�
 油腻诗人横行, 文化贫瘠下请你忍辱负重任重道远保持愤怒.
 
 墨西哥强盗四处横行, 赏金猎人紧随其后, 体制下的肥猪吃下了最后一勺恶臭的泔水, 滚烫的血液再也不流动了.
+
+墙上的倒影永远不会再有变化, 除非光线经历了黎明到日落.
+
+year 2000 是我出生的一年.
+
+在那寂静四分五裂的地方, 还有人挖着洞.
