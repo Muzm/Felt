@@ -45,7 +45,7 @@ class ListViewTest extends StatelessWidget {
 }
 ```
 
-这个可能是Flutter的一个bug, 按理来说就算加上了`shrinkWrap: true`也应该按需加载. [https://github.com/flutter/flutter/issues/26072](Issues)
+这个可能是Flutter的一个bug, 按理来说就算加上了`shrinkWrap: true`也应该按需加载.[https://github.com/flutter/flutter/issues/26072](Issues在这里)
 这个问题可以使用`CustomScrollView`解决. 将`ListView.Builder`替换成`SliverList`版本的`SliverChildBuilderDelegate`就可以解决:
 
 ``` dart
