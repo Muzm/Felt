@@ -4,31 +4,14 @@
 
 跟`ListView.builder`比起来是会直接将所有子元素一次渲染完，`ListView.builder`是用户滚到时再渲染需要显示的子元素. 元素较多时使用builder将提高性能.
 
-### ListView.builder
+**2020/4/23 update:**
+`ListView.builder`如果shrikingWrap属性设置为`true`. 那么所有子元素就会一次渲染完. 效果类型直接使用`ListView`:
 
-`ListView.builder`如果被装在一个flex容器中如`Columu` `Row`中.  那么需要给builder一个`shrinkWrap`属性或者给父元素一个滚动方向的长度限制.
+``` dart
 
-```dart
-Container(
-   child: ListView.builder(
-            itemCount: state?.waiting2Vote?.length, // 标明有多少元素需要渲染，未标明则会一直渲染， 数据没了就会报错.
-            shrinkWrap: true, // 给Container一个height（默认垂直滚动）或者给builder一个这个属性
-            itemBuilder: (BuildContext ctx, index) {
-              if(state?.waiting2Vote != null) {
-                return Vote_itemPage().buildPage(
-                  (new Vote_itemState())
-                    ..business =  state?.waiting2Vote[index].business
-                    ..userLogoTag = state?.waiting2Vote[index].userLogoTag
-                    ..isVo = '我当评委'
-                    ..index = index
-                );
-              }
-              return Text('');
-    })
-）
 ```
 
-### Image Class
+## Image Class
 
 `Image.network` 加载一张网络图片必须给组件图片地址. 实例: `Image.file("http://ImageUrl")`.
 
@@ -36,7 +19,7 @@ Container(
 
 `Image.asset` 从本地图片文件夹中读取一张图片. 实例: `Image.file("./Images/Imges.png")`.
 
-### Flutter Bug(seems like a bug can you report for me?)
+## Flutter Bug(seems like a bug can you report for me?)
 
 很奇怪的Bug
 
@@ -58,7 +41,8 @@ Container(
             ),
  ```
 
-#### 已解决 这样就算点击没有颜色的地方也会触发onTap 2020/3/25
+**update 2020/3/25**
+添加`behavior: HitTestBehavior.translucent`之后点击`GestureDetector`任何地方都会触发`onTap`.
 
  ``` dart
  GestureDetector(
@@ -78,7 +62,7 @@ Container(
  )
  ```
 
-### ListView.builder and Column/Row
+## ListView.builder and Column/Row
 
 `ListView.builder`在`Row`和`Column`中如果未添加主轴的限制的话就会导致RenderBox报错.
 
@@ -95,43 +79,17 @@ Container(
   )
 ```
 
-### Map中的 await
-
-List.map 回调函数中 `return await asyncThings..` 返回的不是await之后的数据是没有await的过的Future. 所以整个map返回的数组是List<Future>.
-使用 `await Future.wait(List<Future>)` 将返回其中所有Future被await之后的数据.
-
-### StatefulWidget 强制用户传入初始数据
-
-``` dart
-class Picker extends StatefulWidget {
-  final double height;
-  final ValueChanged<String> onTap;
-
-  const EmojiPicker({
-    @required this.height, // 这里添加@required
-    @required this.onTap,
-    Key key,
-  })  : assert(height != null), // 并断言 height 不为 null, 为 null 时报错
-        assert(onTap != null),
-        super(key: key);
-
-  @override
-  _EmojiPickerState createState() => _EmojiPickerState();
-}
-
-```
-
-### 将一个FofucsNode聚焦 (已经添加到TextField上)
+## 将一个FofucsNode聚焦 (已经添加到TextField上)
 
 ``` dart
 FocusScope.of(context).requestFocus(myFocusNode);
 ```
 
-### android studio setting
+## android studio setting
 
 Select in project view `Alt + s`
 
-### using base64 as image
+## using base64 as image
 
 ``` dart
 final res = base64.decode(base64String);
@@ -142,7 +100,7 @@ Container(
 )
 ```
 
-### `TextFormField` 的 `initialValue` 不更新问题 2020/3/25
+## `TextFormField` 的 `initialValue` 不更新问题 2020/3/25
 
 最近在做一个输入框的时候发现: `initialValue` 值的只初始化一次. `TextFormField`初始化完成后 `initialValue` 的值如何改变都不会影响到 `TextFormField` 中输入的值.
 
@@ -151,7 +109,7 @@ Container(
 
 [https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue](参考)
 
-### 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
+## 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
 
 在`initState`调用的时候`context`并没有加载好. 所以`initState`转圈的显示如果需要用到`context`的话就会报错.
 
@@ -180,11 +138,11 @@ Container(
 
 将转圈和请求数据转为一个异步操作 等待同步的context加载完成
 
-### 后端的JSON中快速简历一个模型类 2020/3/25
+## 后端的JSON中快速简历一个模型类 2020/3/25
 
 [JSON to Dart](https://javiercbk.github.io/json_to_dart/)
 
-### Dio上传多张图片 2020/3/26
+## Dio上传多张图片 2020/3/26
 
 ``` dart
   static Future<List> uploadReportImages(List<Asset> images) async {
@@ -226,7 +184,7 @@ Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就�
 
 [参考](https://github.com/flutterchina/dio/issues/10)
 
-### TabBar 的 Padding
+## TabBar 的 Padding
 
 `Tab`默认有一个`EdgeInsets.symmetric(horizontal: 16)`的`Padding`. [ref](https://github.com/flutter/flutter/issues/21694#issue-359151684)
 在如果`Tab`中的文字过长那么就会显示不全, 可以把默认的`Padding`设为0.
