@@ -45,7 +45,7 @@ class ListViewTest extends StatelessWidget {
 }
 ```
 
-这个可能是Flutter的一个bug, 按理来说就算加上了`shrinkWrap: true`也应该按需加载.[https://github.com/flutter/flutter/issues/26072](Issues在这里)
+这个可能是Flutter的一个bug, 按理来说就算加上了`shrinkWrap: true`也应该按需加载. [Issues在这里](https://github.com/flutter/flutter/issues/26072)
 这个问题可以使用`CustomScrollView`解决. 将`ListView.Builder`替换成`SliverList`版本的`SliverChildBuilderDelegate`就可以解决:
 
 ``` dart
@@ -182,7 +182,7 @@ Container(
 如果输入框初始完成后还需要改变输入框中的值的话就需要用到 `TextEditController`.
 将 Controller 给到 `TextFormField` 后修改 `TextEditController.text` 这时的改动就会同步到输入框里面.
 
-[https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue](参考)
+[参考](https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue)
 
 ## 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
 
