@@ -5,10 +5,85 @@
 跟`ListView.builder`比起来是会直接将所有子元素一次渲染完，`ListView.builder`是用户滚到时再渲染需要显示的子元素. 元素较多时使用builder将提高性能.
 
 **2020/4/23 update:**
-`ListView.builder`如果shrikingWrap属性设置为`true`. 那么所有子元素就会一次渲染完. 效果类型直接使用`ListView`:
+`ListView.builder`如果`shrinkWrap`属性设置为`true`. 那么所有子元素就会一次渲染完. 效果类似直接使用`ListView`:
 
 ``` dart
+class ListViewTest extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                color: Colors.redAccent,
+                height: 200,
+              ),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 20,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (_, int index) {
+                    print('list 1: $index'); // 页面加载完成并没有进行任何滚动这里会直接log出 0-19(List长度已经超出屏幕).
+                    return ListTile(
+                        title: Text(
+                          '$index',
+                          style: titleStyle,
+                        ));
+                  }),
+              Container(
+                color: Colors.blue,
+                height: 200,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
 
+这个可能是Flutter的一个bug, 按理来说就算加上了`shrinkWrap: true`也应该按需加载. [https://github.com/flutter/flutter/issues/26072](Issues)
+这个问题可以使用`CustomScrollView`解决. 将`ListView.Builder`替换成`SliverList`版本的`SliverChildBuilderDelegate`就可以解决:
+
+``` dart
+class ListViewTest extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.redAccent,
+                height: 200,
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate((_, int index) {
+                print('list: $index'); // 现在就不会在页面加载完后一次性加载所有子元素了
+                return ListTile(
+                    title: Text(
+                  '$index',
+                  style: titleStyle,
+                ));
+              }, childCount: 20),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.blue,
+                height: 200,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 ```
 
 ## Image Class
