@@ -1,8 +1,19 @@
-## 最近工作中使用到的Flutter fish-redux相关
+## Fish-Redux
+update: 2020/4/29
+说实话项目进行这么久了，许多页面都是使用*fish*来进行状态管理的。 
+我个人感觉*fish*的代码太过于冗余，一个能由`StateLessWidget`实现的页面在*fish*中需要:
+1. `page.dart`配置各各文件.
+2. `state.dart`声明页面需要的数据.
+3. `view.dart`构建界面.
+而直接使用`StateLessWidget`一个`Class`就搞定实在是太爽了. 我个人不推荐使用*fish*.
 
 ### 1.fish-redux Page Slot注册Component
-fish-redux中的Page.dart中的`Slot`可以在其中注册`Component`(fish-redux中的Component). 组件的目的是用于多次复用所以必须传递数据到`Component`中(如果遇到不需要传递数据的情况请直接使用`Page`). 而传递数据必须要`Connector`来进行.
-在`Connector`中定义好`get`用于传递数据给`Component`, `set`用于`Component`改变传递下来数据时如何更新到`Page`.
+fish-redux中的Page.dart中的`Slot`可以在其中注册`Component`(fish-redux中的Component). 组件的目的是用于多次复用所以必须传递数据到`Component`中(如果遇到不需要传递数据的情况请直接使用`Page`). `Component`中的数据实际是存储在使用/调用他的`Page`中的。 根据fish-redux文档的描述`Component`是短暂的随时可能销毁，而`Page`是持久的，随时可能销毁的`Component`需要一个地方存储数据.
+
+而传递数据必须要`Connector`来进行. `Connector`有两个方法需要被重写才能正确传递和存储数据:
+1. `get`用于传递数据给`Component`.
+2. `set`用于`Component`改变传递下来数据时如何同步到数据实际存储的地方.
+
 ``` dart
 // page.dart
 import 'connect.dart';
@@ -40,7 +51,7 @@ Widget buildView(HomeState state, Dispatch dispatch, ViewService viewService) {
         body: Container(
             child: Column(
                 children: <Widget>[
-                    viewService.buildComponent('banner'), // 与Slot中注册的名字相同
+                    viewService.buildComponent('banner'), // 与page.dart slots中注册的名字对应
                 ]
             )
         )
@@ -99,7 +110,7 @@ class BillsState extends MutableSource implements Cloneable<BillsState> {
 
   @override
   void setItemData(int index, Object data) { 
-    // Component中数据被修改后存储到哪里 ps. Component是短暂的随时可能会被销毁  数据需要一个地方进行存储
+    // Component中数据被修改后存储到哪里 Component是短暂的随时可能会被销毁 数据需要一个地方进行存储 这个地方就是Page
     bills[index] = data; 
   }
 }
@@ -113,12 +124,11 @@ class BillsPage extends Page<BillsState, Map<String, dynamic>> {
             reducer: buildReducer(),
             view: buildView,
             dependencies: Dependencies<BillsState>(
-                adapter: NoneConn<BillsState>() + BillsAdapter(), // 在Page.dart中必须要在这讲adapter注册到Page中 (才能在View中使用adapter)
+                adapter: NoneConn<BillsState>() + BillsAdapter(), // 在Page.dart中必须要在这将adapter注册到Page中 (才能在View中使用adapter)
                 slots: <String, Dependent<BillsState>>{
                 }),
             middleware: <Middleware<BillsState>>[
             ],);
-
 }
 
 
@@ -136,8 +146,6 @@ Widget buildView(BillsState state, Dispatch dispatch, ViewService viewService) {
     ),
   );
 }
-
-
 ```
 
 ### 3. fish-redux 的 View 什么时候会更新
@@ -176,7 +184,6 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
                 }),
             middleware: <Middleware<MallItemDetailState>>[
             ],);
-
 }
 
 ```
@@ -185,9 +192,9 @@ class MallItemDetailPage extends Page<MallItemDetailState, Map<String, dynamic>>
 
 在View.dart中使用`viewService.context`作为Context来Push或者Pop页面时需要注意: 
 
-1. `viewService.context`是*会*变化的. 如果页面中嵌套有TabBar, 在切换时会发生变化(? 没有考证过).
-2. effct.dart中的被注册的effct函数中的`viewService.context`*不会*发生变化.
-3. view.dart中的`viewService.context`会发生变化所以你在view中做Push Pop操作时的Context可能不是你期望的那个. 建议将路由操作全部都放在effct.dart中使用dispatch effct的方式来进行路由操作.
+1. `view.dart`中的`viewService.context`是*会*变化的. 如果页面中嵌套有TabBar, 在切换时会发生变化(? 没有考证过).
+2. effct.dart中的被注册的effct函数中的`ctx.context`*不会*发生变化.
+3. view.dart中的`viewService.context`会发生变化所以你在view中做Push Pop操作时的Context可能不是你期望的那个. 建议将路由操作全部都放在effct.dart中使用`dispatch(effct)`的方式来进行路由操作.
 
 ### 5. ListView.builder中嵌套Component
 
