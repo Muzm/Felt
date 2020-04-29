@@ -213,7 +213,21 @@ Container(
 
 将转圈和请求数据转为一个异步操作 等待同步的context加载完成
 
-## 后端的JSON中快速简历一个模型类 2020/3/25
+update: 2020/4/29:
+发现了一个新的方法`addPostFrameCallback`,效果类似`Future.delay(Dutarion.zero, callback)`.
+
+``` dart
+import 'package:flutter/scheduler.dart';
+@override
+void initState() {
+  super.initState();
+  SchedulerBinding.instance.addPostFrameCallback((_) => {});
+}
+```
+
+Medium大佬说的是这个函数的callback会在所有Widget加载完成后调用并且只调用一次而且必须要在`initState`中调用(This is a callback for the end of the frame, it only gets called once and we know for sure that the Widget build is completed). [ref](https://medium.com/flutter-community/flutter-lifecycle-for-android-and-ios-developers-8f532307e0c7)
+
+## 后端的JSON中快速建立一个模型类 2020/3/25
 
 [JSON to Dart](https://javiercbk.github.io/json_to_dart/)
 
