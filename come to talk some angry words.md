@@ -43,3 +43,17 @@ year 2000 是我出生的一年.
 我现在知道作家发表作品时的羞愧感了. 一本小说那么多字, 怎样才能对他们全部满意呢?
 
 对公交做过站或者坐错车我时比较恐惧的, 而地铁坐过站就没那么让人不放心.
+
+![](https://user-images.githubusercontent.com/18257790/81046330-bba70c80-8eea-11ea-9505-672f328d7b50.jpg)
+
+大厦蓝屏充满诗意
+
+![](https://user-images.githubusercontent.com/18257790/81046552-3cfe9f00-8eeb-11ea-87f3-9e7b6cb1e228.jpg)
+
+Faye Wong
+
+![](https://user-images.githubusercontent.com/18257790/81046355-cc578280-8eea-11ea-9fa5-5fd6857986a6.jpg)
+
+Radio Moscow 既是莫斯科广播电台也是一个摇滚乐队的名字(60s heavy psychedelica). 
+
+最近发现欧版再版cd的质量实在有点堪忧. 盒子软趴趴碟也是, 跟日版的比起来手感差好多.
