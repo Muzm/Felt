@@ -278,3 +278,33 @@ Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就�
 `Tab`默认有一个`EdgeInsets.symmetric(horizontal: 16)`的`Padding`. [ref](https://github.com/flutter/flutter/issues/21694#issue-359151684)
 在如果`Tab`中的文字过长那么就会显示不全, 可以把默认的`Padding`设为0.
 这个`Padding`非常神奇他不是设置在`Tab`上的. 是设置在`TabBar`的`labelPadding`上的. 估计Flutter团队想让每个`Tab.padding`都统一把.
+
+## video_player 无法加载视频
+
+使用`video_player: ^0.10.10`时无法加载视频, 错误信息如下:
+
+``` bash
+E/ExoPlayerImplInternal( 5671): Source error.
+E/ExoPlayerImplInternal( 5671): com.google.android.exoplayer2.upstream.HttpDataSource$HttpDataSourceException: Unable to connect to http://test.bombox.org/test.mp4
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.DefaultHttpDataSource.open(DefaultHttpDataSource.java:281)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.StatsDataSource.open(StatsDataSource.java:83)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.source.ExtractorMediaPeriod$ExtractingLoadable.load(ExtractorMediaPeriod.java:885)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.Loader$LoadTask.run(Loader.java:381)
+E/ExoPlayerImplInternal( 5671):  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+E/ExoPlayerImplInternal( 5671):  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+E/ExoPlayerImplInternal( 5671):  at java.lang.Thread.run(Thread.java:764)
+E/ExoPlayerImplInternal( 5671): Caused by: java.io.IOException: Cleartext HTTP traffic to test.bombox.org not permitted
+E/ExoPlayerImplInternal( 5671):  at com.android.okhttp.HttpHandler$CleartextURLFilter.checkURLPermitted(HttpHandler.java:115)
+E/ExoPlayerImplInternal( 5671):  at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:458)
+E/ExoPlayerImplInternal( 5671):  at com.android.okhttp.internal.huc.HttpURLConnectionImpl.connect(HttpURLConnectionImpl.java:127)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.DefaultHttpDataSource.makeConnection(DefaultHttpDataSource.java:528)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.DefaultHttpDataSource.makeConnection(DefaultHttpDataSource.java:444)
+E/ExoPlayerImplInternal( 5671):  at com.google.android.exoplayer2.upstream.DefaultHttpDataSource.open(DefaultHttpDataSource.java:279)
+E/ExoPlayerImplInternal( 5671):  ... 6 more
+V/DartMessenger( 5671): Sending message with callback over channel 'flutter.io/videoPlayer/videoEvents0'
+I/flutter ( 5671): Video player had error com.google.android.exoplayer2.ExoPlaybackException: com.google.android.exoplayer2.upstream.HttpDataSource$HttpDataSourceException: Unable to connect to http://test.bombox.org/test.mp4
+```
+
+Google到一个解决方案[ref](https://github.com/flutter/flutter/issues/25749#issuecomment-535020528).
+在`[ProjectRoot]/android/app/src/main/AndroidManifest.xml`有一个`<application>`标签给他加一个属性`android:usesCleartextTraffic="true"`.
+一切就ok了.
