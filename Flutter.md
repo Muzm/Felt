@@ -308,3 +308,23 @@ I/flutter ( 5671): Video player had error com.google.android.exoplayer2.ExoPlayb
 Google到一个解决方案[ref](https://github.com/flutter/flutter/issues/25749#issuecomment-535020528).
 在`[ProjectRoot]/android/app/src/main/AndroidManifest.xml`有一个`<application>`标签给他加一个属性`android:usesCleartextTraffic="true"`.
 一切就ok了.
+
+## Ios上架
+
+最近在弄公司App上架到app store的事情。为了证明我弄过ios上架流程，以及往后的无限幻想，这篇文章就诞生了。
+
+1.1 
+
+## 当你的Flutter在启动的时候卡在了`Initializing gradle…`或`Running Gradle task 'assembleDebug'`请参考这篇[文章](https://blog.csdn.net/android157/article/details/103657486)
+flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网之外)下点东西下来, 启动时慢的大部分原因时因为网速慢, 东西下不下来. 这里写几个常用的镜像国内镜像(清华提供的是帮助页面点进去有使用教程, 不要直接拿到设环境变量):
+
+ - 清华大学dart-pub镜像: `https://mirrors.tuna.tsinghua.edu.cn/help/dart-pub/` (安装pubspec.yaml中声明的第三方包时用到)
+ - 清华大学flutter-storage: `https://mirrors.tuna.tsinghua.edu.cn/help/flutter/` (更新fultter以及ios开发工具时用到)(在南方访问速度有点堪忧不过还是比flutterchina提供的镜像的快)
+ - 上海交大dart-pub镜像: `https://dart-pub.mirrors.sjtug.sjtu.edu.cn` (速度在南方使用貌似会快很多, 但是有时候很不稳定, 装包装不下来只能改回清华pub镜像)
+ - 上海交大flutter-storage: `https://mirrors.sjtug.sjtu.edu.cn` (速度快, 但是不稳定)
+
+目前我经常会在开发中用到的镜像就是这两个了. 清华镜像用起来比交大的要舒适一些, 有详细的介绍改如何使用稳定性挺不错的, 但就是有时候不知道啥原因速度慢(南方). 
+
+在来说几个开发时下载或者进行Build release操作时候卡住的解决方案吧:
+1. 如果卡住了可以`Ctrl + c`把命令K掉 然后在命令后面加上 `--verbose` 参数. 这个参数的可以让Flutter运行的时候打印出所有的log(不加就不显示), 多数原因因为是网络问题下载无法完成卡住, 给了参数之后在进行下载之前Flutter一般会打印出去哪里下载了. 这时就可以根据log来修改环境变量解决下载不能的问题.
+2. 标题里提供的地址
