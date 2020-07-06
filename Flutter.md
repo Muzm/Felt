@@ -324,9 +324,11 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 
 目前我经常会在开发中用到的镜像就是这两个了. 清华镜像用起来比交大的要舒适一些, 有详细的介绍改如何使用稳定性挺不错的, 但就是有时候不知道啥原因速度慢(南方). 
 
-在来说几个开发时下载或者进行Build release操作时候卡住的解决方案吧:
-1. 如果卡住了可以`Ctrl + c`把命令K掉 然后在命令后面加上 `--verbose` 参数. 这个参数的可以让Flutter运行的时候打印出所有的log(不加就不显示), 多数原因因为是网络问题下载无法完成卡住, 给了参数之后在进行下载之前Flutter一般会打印出去哪里下载了. 这时就可以根据log来修改环境变量解决下载不能的问题.
-2. 标题里提供的地址
+如何解决开发时或者进行Build release时卡住:
+0. (任何卡在`Initializing gradle…`或`Running Gradle task 'assembleDebug'`情况都适用).
+1. 在IDE中运行`flutter Build`以及`flutter run`操作默认是不加`--verbose`参数的，大多数时候看不到需要的信息。如果没有足够的信息来侦错就可以手动去命令行中运行命令然后加上`--verbose`参数。
+2. `--verbose` 参数. 这个参数的可以让Flutter运行的时候打印出所有的log(不加就不显示), 多数原因因为是网络问题下载(下载开发工具)无法完成卡住, 给了参数之后在进行下载之前Flutter一般会打印出去哪里下载了. 这时就可以根据log来修改环境变量解决下载不能的问题，修改环境变量可以参考标题里提供的地址以及，tuna镜像提供的帮助页面.
+3. Windows下可以使用[proxifter](https://www.proxifier.com/)来代理命令行程序，Mac下可以参考这篇[文章](https://zhuanlan.zhihu.com/p/47849525)来给命令行走代理.
 
 ### `WillPopScope` In IOS
 最近发现如果使用`WillPopScope`套在需要进行`Pop`操作的`Widget`(通常页面下这个`Widget`都是`Scaffold`)的外层在IOS上会导致划屏后退操作无法触发. 目前还没有测试Android手机上的划屏后退操作是否有效.
