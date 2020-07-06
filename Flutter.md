@@ -248,7 +248,7 @@ Medium大佬说的是这个函数的callback会在所有Widget加载完成后调
 
       final List<MultipartFile> mutiPartList = await Future.wait(fuMutiPart);
 
-      FormData form = FormData.fromMap({"file": mutiPartList});
+      FormData form = FormData.fromMap({"file": mutiPartList}); // 如果mutiPartList的类型是List<MultipartFile>这里传递给后端的时候这个Key会被Dio给修改掉: file => file[]
 
       final result =
           await BaseService.http.post('recruitment/index/upload', data: form);
@@ -269,9 +269,9 @@ Medium大佬说的是这个函数的callback会在所有Widget加载完成后调
   }
 ```
 
-Dio在上传文件数组的时候会给字符串Key加上一个`[]`所以Key就变成了`Key[]`. 在上面的示例代码中`FormData.fromMap({"file": mutiPartList})` 如果mutiPartList是一个List. Key会被Dio的`FormData.fromMap`转为`file[]`. 可能导致后端key不同接收不到数据.
+Dio在上传文件数组的时候会给后端的字符串key加上一个`[]`所以Key就变成了`Key[]`.
 
-[参考](https://github.com/flutterchina/dio/issues/10)
+在上面的示例代码中`FormData.fromMap({"file": mutiPartList})`如果mutiPartList是一个List, Key会被Dio的`FormData.fromMap`转为`file[]`, 数据传递到后端的时候需要用`"file[]"`来获取数据. [参考](https://github.com/flutterchina/dio/issues/10)
 
 ## TabBar 的 Padding
 
