@@ -68,6 +68,6 @@ Radio Moscow 既是莫斯科广播电台也是一个摇滚乐队的名字(60s he
 
 现在是老爵士乐手的逼逼赖赖时间. 大家好像都有目标呢，而我最近感觉有明显进步的只有和人对骂的技术。 从上个月的骂人还要结巴到现在骂人形如行云流水，队友完全不能还嘴。
 
-![](https://townsquare.media/site/295/files/2015/10/Pink-Floyd-Atom-Heart-Mother.jpg?w=1200&h=0&zc=1&s=0&a=t&q=89)
+![](https://user-images.githubusercontent.com/18257790/86990084-629b7380-c1ce-11ea-955a-9ebd54dc08e9.jpg)
 
 Atom Heart Mother
