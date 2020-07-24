@@ -316,11 +316,11 @@ Google到一个解决方案[ref](https://github.com/flutter/flutter/issues/25749
 ### 当你的Flutter在启动的时候卡在了`Initializing gradle…`或`Running Gradle task 'assembleDebug'`请参考这篇[文章](https://blog.csdn.net/android157/article/details/103657486)
 flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网之外)下点东西下来, 启动时慢的大部分原因时因为网速慢, 东西下不下来. 这里写几个常用的镜像国内镜像, 设置环境变量后就可以使用:
 
- - 清华大学dart-pub镜像: `https://mirrors.tuna.tsinghua.edu.cn/dart-pub` (安装pubspec.yaml中声明的第三方包时用到[帮助页面](https://mirrors.tuna.tsinghua.edu.cn/help/flutter/))
- - 清华大学flutter-storage: `https://mirrors.tuna.tsinghua.edu.cn/flutter` (安装/更新fultter以及ios开发工具时用到)(在南方访问速度有点堪忧不过还是比flutterchina提供的镜像的快[帮助页面](https://mirrors.tuna.tsinghua.edu.cn/help/flutter/))
+ - 清华大学dart-pub镜像: `https://mirrors.tuna.tsinghua.edu.cn/dart-pub` (安装pubspec.yaml中声明的第三方包时用到[使用帮助页面](https://mirrors.tuna.tsinghua.edu.cn/help/flutter/))
+ - 清华大学flutter-storage: `https://mirrors.tuna.tsinghua.edu.cn/flutter` (安装/更新fultter以及ios开发工具时用到[帮助页面](https://mirrors.tuna.tsinghua.edu.cn/help/flutter/))(在南方访问速度有点堪忧不过还是比flutterchina提供的镜像的快)
  - 上海交大dart-pub镜像: `https://dart-pub.mirrors.sjtug.sjtu.edu.cn` (速度在南方使用貌似会快很多, 但是有时候很不稳定, 装包装不下来只能改回清华pub镜像)
  - 上海交大flutter-storage: `https://mirrors.sjtug.sjtu.edu.cn` (速度快, 但是不稳定)
- - 清华Cocoapods镜像: `https://mirrors.tuna.tsinghua.edu.cn/help/CocoaPods/` (ios在运行之前需要将pubspec.yaml中声明的一些包安装Swift版本需要使用到Cocoapods)
+ - 清华Cocoapods镜像: `https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git` (ios在运行之前需要将pubspec.yaml中声明的一些包安装Swift版本需要使用到Cocoapods[帮助页面](https://mirrors.tuna.tsinghua.edu.cn/help/CocoaPods/))
 
 目前我经常会在开发中用到的镜像就是这两个了. 清华镜像用起来比交大的要舒适一些, 有详细的介绍改如何使用稳定性挺不错的, 但就是有时候不知道啥原因速度慢(南方). 
 
