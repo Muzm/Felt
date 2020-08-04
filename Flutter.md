@@ -335,4 +335,326 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 有关这个问题的讨论链接：[Remi](https://stackoverflow.com/a/49162131)
 
 ### App更新相关
-(先开个坑)
+
+
+更新需要后端服务器的支持,来根据不同的平台获取最新版本的App版本号后跟当前已经安装的版本进行对比,如果不同就需要提示升级. 
+检查后发现版本后不一致时就需要提示升级, 两个主要手机平台升级方式不同: 
+- Android
+1. 直接下载新版Apk后安装更新.
+2. 跳转到应用商店后用户安装更新.
+   
+- IOS
+1. 跳转到App Store应用界面用户点击更新.
+
+公司Android端更新主要是直接下载Apk来进行更新的, 如果需要跳转到应用市场进行更新的话就和IOS更新类似,直接复制应用市场地址然后进行跳转.
+
+开发使用到的开源库:
+1.  [PackgeInfo ^0.4.0+5](https://pub.dev/packages/package_info)专门用于检查当前安装的App版本号.
+2.  [permission_handler ^3.2.2](https://pub.dev/packages/permission_handler)检查是否有权限进行安装Apk文件.
+3.  [Dio](https://pub.dev/packages/dio)网络请求库，用于下载Apk文件.
+
+``` java
+
+// upgrade.dart
+
+class NewVersionApkDialog extends StatefulWidget {
+
+  final AppVersion version; // 服务器获取的最新版本号信息
+
+  NewVersionApkDialog(this.version);
+
+  @override
+  _NewVersionApkDialogState createState() => _NewVersionApkDialogState();
+}
+
+class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
+
+  double progress = 0.0; // 下载进度
+
+  bool isDownloading = false; // 是否在下载中
+
+  bool isDownloadedNewVersionApk = false; // 是否已经下载了新版本Apk
+
+  @override
+  void initState() {
+    checkIsDownloadedApk();
+    super.initState();
+  }
+
+  Future<void> checkIsDownloadedApk() async {
+    // 本地存储检查新版本Apk是否已经下载
+    final downloadedVersion =
+        await Application.sharePreference.get('DownloadedApkVersion');
+
+    setState(() {
+      // 检查从服务器获取的最新版本Apk是否是下载过了
+      isDownloadedNewVersionApk =
+          downloadedVersion == '${widget.version.id}+${widget.version.number}';
+    });
+  }
+
+  Future<void> _downloadApk(String apkAddress) async {
+    if (!isDownloading) {
+      setState(() {
+        isDownloading = true;
+      });
+
+      DownloadFile.download(apkAddress,
+          progress: showDownloadProgress,
+          whereSaveFile: () async => File(
+              '${await DownloadFile.apkLocalPath}/new_version_xbd_apk_${widget.version.id}_${widget.version.number}.apk'),
+          afterSave: () {
+            setState(() {
+              isDownloadedNewVersionApk = true;
+
+              Application.sharePreference.putString('DownloadedApkVersion',
+                  '${widget.version.id}+${widget.version.number}'); // 本地存储保存已经下载的Apk的版本号
+            });
+          },
+          finalFunction: () {
+            setState(() {
+              isDownloading = false;
+            });
+          });
+    }
+  }
+
+  void showDownloadProgress(received, total) {
+    if (total != -1) {
+      print((received / total * 100).toStringAsFixed(2) + "%");
+
+      setState(() {
+        progress = received / total;
+      });
+    }
+  }
+
+  Future<Null> _installApk(String apkFilePath) async {
+    if (apkFilePath.isEmpty) {
+      print('make sure the apk file is set');
+      return;
+    }
+
+    // 安装Apk需要存储权限 先确保拥有权限
+
+    Map<PermissionGroup, PermissionStatus> permissions =
+    await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
+
+      // 开源安装库专门用于安装Apk或者进行跳转到应用商店 
+      InstallPlugin.installApk(apkFilePath, 'com.chunqiushiji.xbdapp')
+          .then((result) {
+        debugPrint('安装新版本结果 $result');
+      }).catchError((error) {
+        debugPrint('安装出错: $error');
+      });
+    } else {
+      print('没有权限进行安装');
+    }
+  }
+
+  void _appStore(String url) {
+    // 填写App Store商店地址后在IOS上会直接跳转进入App Store页面进行更新
+    InstallPlugin.gotoAppStore(url);
+  }
+
+  Widget _showUpgradeDialog() {
+    TextStyle contentStyle =
+        TextStyle(fontSize: getSp(15), fontFamily: fontMedium);
+
+    TextStyle titleStyle = TextStyle(fontSize: getSp(18), fontFamily: fontBold);
+
+    List<Widget> widgets = [];
+
+    Widget subColumn = Padding(
+      padding: EdgeInsets.symmetric(horizontal: gw(15)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              '发现新版本',
+              textAlign: TextAlign.center,
+              style: titleStyle,
+            ),
+          ),
+          Text.rich(TextSpan(text: '最新版本: ', style: titleStyle, children: [
+            TextSpan(text: '${widget.version.id}', style: contentStyle)
+          ])),
+          Text(
+            '新版本特性:',
+            style: titleStyle,
+          )
+        ]..addAll(widget.version.content
+            .asMap()
+            .keys
+            .map<Widget>((index) => Text(
+                  '${index + 1}.${widget.version.content[index]}',
+                  style:
+                      TextStyle(fontSize: getSp(15), fontFamily: fontRegular),
+                ))
+            .toList()),
+      ),
+    );
+
+    widgets.add(subColumn);
+
+    if (isDownloading) {
+      widgets.add(Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: gw(15), vertical: 12),
+              width: double.infinity,
+              height: 30,
+              child: LinearProgressIndicator(
+                backgroundColor: Colors.grey,
+                valueColor: AlwaysStoppedAnimation<Color>(mainColor),
+                value: progress,
+              ),
+            ),
+            Text(
+              '${(progress * 100).toStringAsFixed(2)}%',
+              style: TextStyle(
+                  fontSize: getSp(12),
+                  fontFamily: fontRegular,
+                  color: Colors.white),
+            )
+          ],
+        ),
+      ));
+    }
+
+    if (widget.version.forced) {
+      widgets.add(Padding(
+        padding: EdgeInsets.symmetric(horizontal: gw(15))
+            .add(EdgeInsets.only(top: 4)),
+        child: Text(
+          '本次更新涉及重要内容，需更新后使用',
+          style: TextStyle(fontSize: getSp(15), fontFamily: fontBold),
+        ),
+      ));
+    }
+
+    if (!isDownloading && !isDownloadedNewVersionApk && Platform.isAndroid) {
+      widgets.add(SubmitButton(
+        onTap: () async {
+          final hadPermission = await checkStoragePermission();
+
+          if (hadPermission) {
+            _downloadApk(widget.version.url);
+          } else {
+            showToast('未授权下载新安装文件');
+          }
+        },
+        text: '立即更新',
+      ));
+    }
+
+    if (isDownloadedNewVersionApk || Platform.isIOS) {
+      widgets.add(SubmitButton(
+        onTap: () async {
+          if (Platform.isIOS && widget.version.type == 'ipa') {
+            _appStore(widget.version.url);
+          } else {
+            _installApk(
+                '${await DownloadFile.apkLocalPath}/new_version_xbd_apk_${widget.version.id}_${widget.version.number}.apk');
+          }
+        },
+        text: '立即安装',
+      ));
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {},
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: widgets,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          if (!widget.version.forced && !isDownloading) {
+            Navigator.pop(context);
+          }
+        },
+        child: Container(
+            padding: EdgeInsets.symmetric(horizontal: gw(15)),
+            alignment: Alignment.center,
+            height: double.infinity,
+            width: double.infinity,
+            color: Colors.black.withOpacity(.4),
+            child: _showUpgradeDialog()),
+      ),
+    );
+  }
+}
+
+// downloadFile.dart (DownloadFile.download方法在这里实现)
+
+class DownloadFile {
+  static Future<String> get apkLocalPath async {
+    final directory = await getExternalStorageDirectory();
+    return directory.path;
+  }
+
+  static Future<bool> download(String fileUrl,
+      {void Function(int count, int total) progress,
+      @required Future<File> Function() whereSaveFile,
+      Function afterSave,
+      Function finalFunction}) async {
+    try {
+      Response response = await Dio().get(
+        fileUrl,
+        onReceiveProgress: progress,
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status < 500;
+            }),
+      );
+
+      File file = await whereSaveFile();
+      var raf = file.openSync(mode: FileMode.write);
+      raf.writeFromSync(response.data);
+      await raf.close();
+
+      if(afterSave is Function) {
+        afterSave();
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('下载$fileUrl: ${e.toString()}');
+      return false;
+    } finally {
+      if(finalFunction is Function) {
+        finalFunction();
+      }
+    }
+  }
+}
+
+
+```
+
+  
