@@ -1,0 +1,12 @@
+1. 请描述dart中的级联操作符
+2. dart的作用域
+3. dart的运行机制
+4. 请描述dart中的extends mixins implements
+5. flutter中Widget Element与RenderObject的关系分别的作用是什么
+6. Widget的Build中的BuildContext是什么？
+7. StatefulWidget的生命周期有哪些分别什么时候触发?
+8. flutter中如何跟原生进行通讯？
+
+---------------
+请在这里作答
+

@@ -182,6 +182,9 @@ Container(
 如果输入框初始完成后还需要改变输入框中的值的话就需要用到 `TextEditController`.
 将 Controller 给到 `TextFormField` 后修改 `TextEditController.text` 这时的改动就会同步到输入框里面.
 
+update: 2020/8/27
+ 也可以使用
+
 [参考](https://stackoverflow.com/questions/58053956/setstate-does-not-update-textformfield-when-use-initialvalue)
 
 ## 如何在页面初始化数据的时候展示一个转圈圈(加载) 2020/3/25
@@ -656,5 +659,8 @@ class DownloadFile {
 
 
 ```
+
+### 如何给Flutter apk添加混淆
+[link](https://medium.com/@swav.kulinski/flutter-and-android-obfuscation-8768ac544421)
 
   
