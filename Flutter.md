@@ -339,14 +339,11 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 
 ### App更新相关
 
-
-更新需要后端服务器的支持,来根据不同的平台获取最新版本的App版本号后跟当前已经安装的版本进行对比,如果不同就需要提示升级. 
-检查后发现版本后不一致时就需要提示升级, 两个主要手机平台升级方式不同: 
-- Android
+- Android升级方式
 1. 直接下载新版Apk后安装更新.
 2. 跳转到应用商店后用户安装更新.
    
-- IOS
+- IOS升级方式
 1. 跳转到App Store应用界面用户点击更新.
 
 公司Android端更新主要是直接下载Apk来进行更新的, 如果需要跳转到应用市场进行更新的话就和IOS更新类似,直接复制应用市场地址然后进行跳转.
@@ -356,13 +353,225 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 2.  [permission_handler ^3.2.2](https://pub.dev/packages/permission_handler)检查是否有权限进行安装Apk文件.
 3.  [Dio](https://pub.dev/packages/dio)网络请求库，用于下载Apk文件.
 
+1. 首先跟后端通信获取最新版本号然后使用PackgeInfo.fromPlatform获得当前安装版本的版本号之后进行对比,如果版本号不相同就弹出提示更新界面:
+``` java
+ Future<bool> isNeedsUpgrade(AppVersion remoteVersionInfo) async {
+  try {
+    final localVersionInfo = await PackageInfo.fromPlatform(); // PackgeInfo 获取当前安装的版本号
+
+    if (remoteVersionInfo.number == localVersionInfo.buildNumber &&
+        remoteVersionInfo.id.replaceFirst('_apk', '') ==
+            localVersionInfo.version) {
+      return false;
+    } else {
+      _updateDialog();  
+    }
+  } catch (e) {
+    debugPrint('检查是否需要更新失败: ${e.toString()}');
+    return false;
+  }
+}
+
+void _updateDialog(AppVersion remoteVersionInfo) {
+  Navigator.push(
+          context,
+          PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (_, __, ___) =>
+                  NewVersionApkDialog(remoteVersionInfo),
+              transitionDuration: Duration(milliseconds: 100),
+              transitionsBuilder: (BuildContext context,
+                  Animation<double> animation,
+                  Animation<double> secondaryAnimation,
+                  Widget child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              }));
+} 
+```
+
+2. 提示用户此次更新内容并检查用户是否已经下载apk.
+
+
+
+``` java
+  Future<void> checkIsDownloadedApk() async {
+    final downloadedVersion =
+        await Application.sharePreference.get('DownloadedApkVersion');
+
+    setState(() {
+      isDownloadedNewVersionApk =
+          downloadedVersion == '${widget.version.id}+${widget.version.number}';
+    });
+  }
+
+```
+
+APK下载进度条
+
 ``` java
 
-// upgrade.dart
+  Future<void> _downloadApk(String apkAddress) async {
+    if (!isDownloading) {
+      setState(() {
+        isDownloading = true;
+      });
+
+      DownloadFile.download(apkAddress, 
+          progress: showDownloadProgress, // 这里使用的是Dio.get下载文件的onReceiveProgress
+          whereSaveFile: () async => File(
+              '${await DownloadFile.apkLocalPath}/new_version_xbd_apk_${widget.version.id}_${widget.version.number}.apk'),
+          afterSave: () {
+            setState(() {
+              isDownloadedNewVersionApk = true;
+
+              Application.sharePreference.putString('DownloadedApkVersion',
+                  '${widget.version.id}+${widget.version.number}');
+            });
+          },
+          finalFunction: () { // 无论下载是否失败都要更改下载中状态隐藏下载进度条
+            setState(() {
+              isDownloading = false;
+            });
+          });
+    }
+  }
+
+  if (isDownloading) {
+      widgets.add(Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: gw(15), vertical: 12),
+              width: double.infinity,
+              height: 30,
+              child: LinearProgressIndicator(
+                backgroundColor: Colors.grey,
+                valueColor: AlwaysStoppedAnimation<Color>(mainColor),
+                value: progress,
+              ),
+            ),
+            Text(
+              '${(progress * 100).toStringAsFixed(2)}%',
+              style: TextStyle(
+                  fontSize: getSp(12),
+                  fontFamily: fontRegular,
+                  color: Colors.white),
+            )
+          ],
+        ),
+      ));
+    }
+```
+
+如果用户已经下载了最新版本的apk文件或者是IOS系统，那么显示立即安装按钮否则显示下载新版本安装包按钮.
+
+``` java
+      if (!isDownloading && !isDownloadedNewVersionApk && Platform.isAndroid) { // 未下载新版本apk文件并且是android系统显示
+      widgets.add(SubmitButton(
+        onTap: () async {
+          final hadPermission = await checkStoragePermission(); // 检查存储文件权限
+
+          if (hadPermission) {
+            _downloadApk(widget.version.url);
+          } else {
+            showToast('未授权下载新安装文件');
+          }
+        },
+        text: '立即更新',
+      ));
+    }
+
+    if (isDownloadedNewVersionApk || Platform.isIOS) { 已经下载了新版本apk或者是IOS系统
+      widgets.add(SubmitButton(
+        onTap: () async {
+          if (Platform.isIOS && widget.version.type == 'ipa') {
+            _appStore(widget.version.url); // 跳转到App Store更新
+          } else { // 直接安装新版本
+            _installApk(
+                '${await DownloadFile.apkLocalPath}/new_version_xbd_apk_${widget.version.id}_${widget.version.number}.apk');
+          }
+        },
+        text: '立即安装',
+      ));
+    }
+```
+
+完整代码
+
+``` java
+// 下载APK文件 download_file.dart 
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+
+class DownloadFile {
+  static Future<String> get apkLocalPath async {
+    final directory = await getExternalStorageDirectory();
+    return directory.path;
+  }
+
+  static Future<bool> download(String fileUrl,
+      {void Function(int count, int total) progress,
+      @required Future<File> Function() whereSaveFile,
+      Function afterSave,
+      Function finalFunction}) async {
+    try {
+      Response response = await Dio().get(
+        fileUrl,
+        onReceiveProgress: progress,
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status < 500;
+            }),
+      );
+
+      File file = await whereSaveFile();
+      var raf = file.openSync(mode: FileMode.write);
+      raf.writeFromSync(response.data);
+      await raf.close();
+
+      if(afterSave is Function) {
+        afterSave();
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('下载$fileUrl: ${e.toString()}');
+      return false;
+    } finally {
+      if(finalFunction is Function) {
+        finalFunction();
+      }
+    }
+  }
+}
+```
+
+``` java
+// 更新内容弹出框
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:install_plugin/install_plugin.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:xbdapp/constants/theme.dart';
+import 'package:xbdapp/models/app_version.dart';
+import 'package:xbdapp/routers/application.dart';
+import 'package:xbdapp/widgets/check_permission.dart';
+import 'package:xbdapp/widgets/download_file.dart';
+import 'package:xbdapp/widgets/submit_buttton.dart';
 
 class NewVersionApkDialog extends StatefulWidget {
-
-  final AppVersion version; // 服务器获取的最新版本号信息
+  final AppVersion version;
 
   NewVersionApkDialog(this.version);
 
@@ -371,13 +580,6 @@ class NewVersionApkDialog extends StatefulWidget {
 }
 
 class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
-
-  double progress = 0.0; // 下载进度
-
-  bool isDownloading = false; // 是否在下载中
-
-  bool isDownloadedNewVersionApk = false; // 是否已经下载了新版本Apk
-
   @override
   void initState() {
     checkIsDownloadedApk();
@@ -385,12 +587,10 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
   }
 
   Future<void> checkIsDownloadedApk() async {
-    // 本地存储检查新版本Apk是否已经下载
     final downloadedVersion =
         await Application.sharePreference.get('DownloadedApkVersion');
 
     setState(() {
-      // 检查从服务器获取的最新版本Apk是否是下载过了
       isDownloadedNewVersionApk =
           downloadedVersion == '${widget.version.id}+${widget.version.number}';
     });
@@ -411,7 +611,7 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
               isDownloadedNewVersionApk = true;
 
               Application.sharePreference.putString('DownloadedApkVersion',
-                  '${widget.version.id}+${widget.version.number}'); // 本地存储保存已经下载的Apk的版本号
+                  '${widget.version.id}+${widget.version.number}');
             });
           },
           finalFunction: () {
@@ -437,14 +637,9 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
       print('make sure the apk file is set');
       return;
     }
-
-    // 安装Apk需要存储权限 先确保拥有权限
-
     Map<PermissionGroup, PermissionStatus> permissions =
     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
-
-      // 开源安装库专门用于安装Apk或者进行跳转到应用商店 
       InstallPlugin.installApk(apkFilePath, 'com.chunqiushiji.xbdapp')
           .then((result) {
         debugPrint('安装新版本结果 $result');
@@ -457,9 +652,14 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
   }
 
   void _appStore(String url) {
-    // 填写App Store商店地址后在IOS上会直接跳转进入App Store页面进行更新
     InstallPlugin.gotoAppStore(url);
   }
+
+  double progress = 0.0;
+
+  bool isDownloading = false;
+
+  bool isDownloadedNewVersionApk = false;
 
   Widget _showUpgradeDialog() {
     TextStyle contentStyle =
@@ -610,54 +810,73 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
     );
   }
 }
+```
 
-// downloadFile.dart (DownloadFile.download方法在这里实现)
+``` java
+// 检查更新
 
-class DownloadFile {
-  static Future<String> get apkLocalPath async {
-    final directory = await getExternalStorageDirectory();
-    return directory.path;
+ final String timeString =
+      Application.sharePreference.get('lastDateCheckUpdate');
+
+  final int lastCheckTime = timeString != null ? int.parse(timeString) : null;
+
+  if (lastCheckTime != null) {
+    if (DateTime.now()
+            .difference(DateTime.fromMillisecondsSinceEpoch(lastCheckTime))
+            .inDays >
+        1) {
+      _checkUpgrade(ctx.context);
+    }
+  } else {
+    _checkUpgrade(ctx.context);
   }
 
-  static Future<bool> download(String fileUrl,
-      {void Function(int count, int total) progress,
-      @required Future<File> Function() whereSaveFile,
-      Function afterSave,
-      Function finalFunction}) async {
-    try {
-      Response response = await Dio().get(
-        fileUrl,
-        onReceiveProgress: progress,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status < 500;
-            }),
-      );
+void _checkUpgrade(BuildContext context) async {
+  try {
+    String systemType;
 
-      File file = await whereSaveFile();
-      var raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-
-      if(afterSave is Function) {
-        afterSave();
-      }
-
-      return true;
-    } catch (e) {
-      debugPrint('下载$fileUrl: ${e.toString()}');
-      return false;
-    } finally {
-      if(finalFunction is Function) {
-        finalFunction();
-      }
+    if (Platform.isAndroid) {
+      systemType = 'apk';
+    } else if (Platform.isIOS) {
+      systemType = 'ipa';
+    } else {
+      debugPrint('未知平台无法提供更新');
+      showToast('未知平台无法提供更新');
+      return null;
     }
+
+    final remoteVersionInfo = await HomeService.checkNewVersion(systemType);
+
+    final isNeed = await isNeedsUpgrade(remoteVersionInfo);
+
+    /// 存储最后一次检查更新的时间
+    Application.sharePreference.putString('lastDateCheckUpdate',
+        DateTime.now().millisecondsSinceEpoch.toString());
+
+    if (isNeed) {
+      Navigator.push(
+          context,
+          PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (_, __, ___) =>
+                  NewVersionApkDialog(remoteVersionInfo),
+              transitionDuration: Duration(milliseconds: 100),
+              transitionsBuilder: (BuildContext context,
+                  Animation<double> animation,
+                  Animation<double> secondaryAnimation,
+                  Widget child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              }));
+    } else {
+      showToast('当前已是最新版本');
+    }
+  } catch (e) {
+    debugPrint('检查更新出错: ${e.toString()}');
   }
 }
-
-
 ```
 
 ### 如何给Flutter apk添加混淆
