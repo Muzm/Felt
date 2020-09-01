@@ -563,12 +563,7 @@ import 'package:flutter/material.dart';
 import 'package:install_plugin/install_plugin.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:xbdapp/constants/theme.dart';
-import 'package:xbdapp/models/app_version.dart';
-import 'package:xbdapp/routers/application.dart';
-import 'package:xbdapp/widgets/check_permission.dart';
-import 'package:xbdapp/widgets/download_file.dart';
-import 'package:xbdapp/widgets/submit_buttton.dart';
+import 'package:fucked/utils/download_file.dart';
 
 class NewVersionApkDialog extends StatefulWidget {
   final AppVersion version;
@@ -640,7 +635,7 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
     Map<PermissionGroup, PermissionStatus> permissions =
     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
-      InstallPlugin.installApk(apkFilePath, 'com.chunqiushiji.xbdapp')
+      InstallPlugin.installApk(apkFilePath, 'com.fuckingfucked.fucked')
           .then((result) {
         debugPrint('安装新版本结果 $result');
       }).catchError((error) {
