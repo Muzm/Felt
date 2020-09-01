@@ -353,6 +353,7 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 2.  [permission_handler ^3.2.2](https://pub.dev/packages/permission_handler)检查是否有权限进行安装Apk文件.
 3.  [Dio](https://pub.dev/packages/dio)网络请求库，用于下载Apk文件.
 
+
 1. 首先跟后端通信获取最新版本号然后使用PackgeInfo.fromPlatform获得当前安装版本的版本号之后进行对比,如果版本号不相同就弹出提示更新界面:
 ``` java
  Future<bool> isNeedsUpgrade(AppVersion remoteVersionInfo) async {
