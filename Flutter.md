@@ -355,7 +355,7 @@ flutter启动时经常回去偷偷摸摸的去外网(世界上最大的局域网
 
 
 1. 首先跟后端通信获取最新版本号然后使用PackgeInfo.fromPlatform获得当前安装版本的版本号之后进行对比,如果版本号不相同就弹出提示更新界面:
-``` java
+``` dart
  Future<bool> isNeedsUpgrade(AppVersion remoteVersionInfo) async {
   try {
     final localVersionInfo = await PackageInfo.fromPlatform(); // PackgeInfo 获取当前安装的版本号
@@ -397,7 +397,7 @@ void _updateDialog(AppVersion remoteVersionInfo) {
 
 
 
-``` java
+``` dart
   Future<void> checkIsDownloadedApk() async {
     final downloadedVersion =
         await Application.sharePreference.get('DownloadedApkVersion');
@@ -412,7 +412,7 @@ void _updateDialog(AppVersion remoteVersionInfo) {
 
 APK下载进度条
 
-``` java
+``` dart
 
   Future<void> _downloadApk(String apkAddress) async {
     if (!isDownloading) {
@@ -470,7 +470,7 @@ APK下载进度条
 
 如果用户已经下载了最新版本的apk文件或者是IOS系统，那么显示立即安装按钮否则显示下载新版本安装包按钮.
 
-``` java
+``` dart
       if (!isDownloading && !isDownloadedNewVersionApk && Platform.isAndroid) { // 未下载新版本apk文件并且是android系统显示
       widgets.add(SubmitButton(
         onTap: () async {
@@ -503,7 +503,7 @@ APK下载进度条
 
 完整代码
 
-``` java
+``` dart
 // 下载APK文件 download_file.dart 
 import 'dart:io';
 
@@ -556,7 +556,7 @@ class DownloadFile {
 }
 ```
 
-``` java
+``` dart
 // 更新内容弹出框
 import 'dart:io';
 
@@ -808,7 +808,7 @@ class _NewVersionApkDialogState extends State<NewVersionApkDialog> {
 }
 ```
 
-``` java
+``` dart
 // 检查更新
 
  final String timeString =
